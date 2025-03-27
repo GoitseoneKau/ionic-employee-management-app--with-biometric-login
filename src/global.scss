@@ -35,3 +35,16 @@
 /* @import "@ionic/angular/css/palettes/dark.always.css"; */
 /* @import "@ionic/angular/css/palettes/dark.class.css"; */
 @import '@ionic/angular/css/palettes/dark.system.css';
+
+
+form {
+    display: flex;
+    flex-direction: column;
+    gap: 1.2em;
+  }
+  
+  ion-note {
+    font-size: 1em;
+    text-align: center;
+    width: 100%;
+  }

@@ -1,20 +1,222 @@
-<ion-header [translucent]="true">
-  <ion-toolbar>
+<ion-header  translucent="true">
+  <ion-toolbar color="secondary shade">
     <ion-title>
-      Blank
+      Employee Management App
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content [fullscreen]="true">
-  <ion-header collapse="condense">
+<ion-content color="secondary tint" [fullscreen]="false" >
+  <ion-card class="ion-no-border" >
     <ion-toolbar>
-      <ion-title size="large">Blank</ion-title>
+      <ion-searchbar showClearButton="focus" (ionInput)="onSearchChange($event)"></ion-searchbar>
     </ion-toolbar>
-  </ion-header>
+  </ion-card>
+   
 
-  <div id="container">
-    <strong>Ready to create an app?</strong>
-    <p>Start with Ionic <a target="_blank" rel="noopener noreferrer" href="https://ionicframework.com/docs/components">UI Components</a></p>
-  </div>
+
+    <ion-fab slot="fixed" horizontal="end" vertical="bottom" >
+      <ion-fab-button  id="add-modal" size="" color="primary tint">
+        <ion-icon  name="add"></ion-icon>
+      </ion-fab-button>
+    </ion-fab>
+
+  
+  <!-- List -->
+  
+  <ion-list >
+    <ion-list-header>
+      <h4 >List of Employees</h4>
+    </ion-list-header>
+   
+   <ng-content *ngIf="employees().length!==0;else noData">
+      <ion-item-sliding *ngFor="let employee of employees()">
+        <ion-item class="employee" lines="full"  (click)="gotoDetails(employee.id!)"  >
+            <ion-label >
+              <p><b>Department</b> : {{employee.department}}</p>
+              <p><b>Emp_ID</b> : {{employee.employee_id}}</p>
+
+            </ion-label>
+            <ion-label >
+              <ion-text>Name : {{employee.name|titlecase}}</ion-text>
+              <p><b>Position</b> : {{employee.position}}</p>
+  
+            </ion-label>
+            <ion-label >
+              <ion-text [ngClass]="{'active-text':employee.active,'inactive-text':!employee.active}">
+                {{employee.active?"Active":"Inactive"}}
+              </ion-text>
+            </ion-label>
+          <div [ngClass]="{'active':employee.active,'inactive':!employee.active}"></div>
+        </ion-item>
+       
+        <ion-item-options side="end">
+          <ion-item-option color="danger" (click)="deleteEmp(employee.id)" onkeydown="deleteEmp(employee.id)" >
+            Delete
+            <ion-icon name="trash" slot="start" ></ion-icon>
+          </ion-item-option>
+        </ion-item-options>
+    
+      </ion-item-sliding>
+    </ng-content>
+
+    <ng-template #noData>
+        <ion-item>
+          <ion-text>No data available</ion-text>
+        </ion-item>
+    </ng-template>
+    
+  </ion-list>
+
+  <!-- Delete Alert -->
+  <ion-alert
+  #deleteAlert
+  header="Delete Alert"
+  message="Are you sure you want to delete employee?"
+  [buttons]="alertButtons"
+  (willDismiss)="dismissAlert($event)"
+></ion-alert>
+
+  <!-- Modal Add-->
+  <ion-modal #addModal trigger="add-modal" (willDismiss)="onWillDismiss($event)">
+    <ng-template>
+      <ion-header>
+        <ion-toolbar>
+          <ion-buttons slot="start">
+            <ion-button (click)="cancel()" class="ion-text-center" color="danger">Cancel</ion-button>
+          </ion-buttons>
+          <ion-title class="ion-text-center">Welcome</ion-title>
+          <ion-buttons slot="end">
+            <ion-button [disabled]="!addForm.control.valid" 
+            [color]="addForm.control.valid?'primary':'medium'" 
+             (click)="confirm()" [strong]="true" class="ion-text-center">
+             Add
+            </ion-button>
+          </ion-buttons>
+        </ion-toolbar>
+      </ion-header>
+      <ion-content class="ion-padding">
+        
+        <form #addForm="ngForm" action="">
+     
+          <!-- name input -->
+            <ion-input
+              label="Name"
+              labelPlacement="floating"
+              fill="outline"
+              type="text"
+              placeholder="John Doe"
+             name="name"
+            [(ngModel)]="data.name"
+            errorText="employee name is required"
+            required="true"
+            ></ion-input>
+           
+          <!-- department select input -->
+            <ion-select 
+              label="Department"
+              labelPlacement="floating"
+              fill="outline"
+              aria-label="position" interface="popover" 
+              placeholder="HR"
+              name="department" 
+              errorText="department is required"
+              [(ngModel)]="data.department" required="true" >
+              <ion-select-option value="Human Resources">HR</ion-select-option>
+              <ion-select-option value="Administration">Administration</ion-select-option>
+              <ion-select-option value="IT">IT</ion-select-option>
+              <ion-select-option value="Finance">Finance</ion-select-option>
+              <ion-select-option value="Public Relations">PR</ion-select-option>
+              <ion-select-option value="Management">Management</ion-select-option>
+            </ion-select>
+        
+            <!-- position input -->
+            <ion-input
+              label="Position"
+              labelPlacement="floating"
+              fill="outline"
+              type="text"
+              placeholder="manager"
+              name="position"
+            [(ngModel)]="data.position"
+            errorText="employee position is required"
+            required="true"
+            ></ion-input>
+       
+            <!-- email input -->
+            @let email_error = 
+            email.hasError('pattern') && "enter valid email" ||
+            email.hasError('required') && "email is required";
+            <ion-input
+              label="Email"
+              fill="outline"
+              labelPlacement="floating"
+              type="email"
+              placeholder="employee@company.com"
+              name="email"
+              [(ngModel)]="data.email"
+
+              #email="ngModel"
+              pattern="[\w\.]+@([\w]+\.)+[\w]{2,4}"
+              [errorText]="email_error"
+              required="true"
+              
+            ></ion-input>
+    
+            <!-- phone number  input -->
+            @let phone_error = 
+            phone.hasError('pattern') && "enter valid RSA phone no. i.e 012-345-2345" ||
+            phone.hasError('required') && "phone is required";
+
+            <ion-input
+              label="Phone number"
+              fill="outline"
+              labelPlacement="floating"
+              type="text"
+              placeholder="012-234-5677"
+              name="phone"
+              pattern="([^1-9]([0-9]{2}))-([0-9]{3})-([0-9]{4})"
+              [errorText]="phone_error"
+              [(ngModel)]="data.phone"
+              #phone="ngModel"
+              
+              required
+            ></ion-input>
+    
+            <!-- salary input -->
+            @let salary_error = 
+            salary.hasError('pattern') && "enter valid amount,thats greater than/equal to 1000" ||
+            salary.hasError('required') && "salary is required";
+            <ion-input
+              label="Salary(p.a/p.m)"
+              fill="outline"
+              labelPlacement="floating"
+              type="number"
+              placeholder="employee salary"
+              name="salary"
+
+              pattern="([^0][0-9]{3,})"
+              [errorText]="salary_error"
+              [(ngModel)]="data.salary"
+               #salary="ngModel"
+              
+               required
+            ></ion-input>
+       
+
+           
+            <ion-note >Add button will be active with valid inputs</ion-note>
+         
+        </form>
+      </ion-content>
+    </ng-template>
+  </ion-modal>
+
+  
 </ion-content>
+
+<ion-footer  >
+  <ion-toolbar class="ion-text-center" color="secondary shade">
+    <ion-text >&copy; Copyright Goitseone Kau</ion-text>
+  </ion-toolbar>
+</ion-footer>

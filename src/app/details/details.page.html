@@ -1,0 +1,169 @@
+<ion-header [translucent]="true">
+  <ion-toolbar class="d-flex">
+    <ion-buttons slot="start">
+      <ion-button  (click)="back()">
+        <ion-icon name="arrow-back-sharp"></ion-icon>
+      </ion-button>
+    </ion-buttons>
+    <h5 class="ion-text-center ">Edit Employee Details</h5>
+    <ion-buttons slot="end">
+      <ion-button 
+      [disabled]="!editForm.control.valid"
+      [color]="editForm.control.valid?'primary':'medium'" 
+      (click)="editEmp(employee_details)"
+      [strong]="true">
+      Update 
+    </ion-button>
+    </ion-buttons>
+  </ion-toolbar>
+</ion-header>
+<ion-content class="ion-padding" [fullscreen]="false" >
+
+  <form #editForm="ngForm" action="">
+
+    <!-- name input -->
+      <ion-input
+        label="Name"
+        labelPlacement="floating"
+        fill="outline"
+        type="text"
+        placeholder="John Doe"
+       name="name"
+      [(ngModel)]="employee_details.name"
+
+      errorText="employee name is required"
+      required="true"
+      ></ion-input>
+     
+    <!-- department select input -->
+      <ion-select 
+        label="Department"
+        labelPlacement="floating"
+        fill="outline"
+        aria-label="position" interface="popover" 
+        placeholder="HR"
+        name="department" 
+        errorText="department is required"
+        [(ngModel)]="employee_details.department" 
+        required="true" >
+        <ion-select-option value="Human Resources">HR</ion-select-option>
+        <ion-select-option value="Administration">Administration</ion-select-option>
+        <ion-select-option value="IT">IT</ion-select-option>
+        <ion-select-option value="Finance">Finance</ion-select-option>
+        <ion-select-option value="Public Relations">PR</ion-select-option>
+        <ion-select-option value="Management">Management</ion-select-option>
+      </ion-select>
+  
+      <ion-input
+        label="Position"
+        labelPlacement="floating"
+        fill="outline"
+        type="text"
+        placeholder="manager"
+        name="position"
+      [(ngModel)]="employee_details.position"
+      #position="ngModel"
+      [class.ng-touched]="
+      position.dirty || 
+      position.touched && 
+      !position.control.valid?
+      position.control.touched :!position.control.touched"
+      errorText="employee position is required"
+      required="true"
+      ></ion-input>
+ 
+      <!-- email input -->
+      @let email_error = 
+      email.hasError('pattern') && "enter valid email" ||
+      email.hasError('required') && "email is required";
+      <ion-input
+        label="Email"
+        fill="outline"
+        labelPlacement="floating"
+        type="email"
+        placeholder="employee@company.com"
+        name="email"
+        [(ngModel)]="employee_details.email"
+
+        #email="ngModel"
+        [class.ng-touched]="
+        email.dirty || 
+        email.touched && 
+        !email.control.valid?
+        email.control.touched :!email.control.touched"
+        pattern="[\w\.]+@([\w]+\.)+[\w]{2,4}"
+        [errorText]="email_error"
+        required="true"
+        
+      ></ion-input>
+
+      <!-- phone number  input -->
+      @let phone_error = 
+      phone.hasError('pattern') && "enter valid RSA phone no. i.e 012-345-2345" ||
+      phone.hasError('required') && "phone is required";
+
+      <ion-input
+        label="Phone number"
+        fill="outline"
+        labelPlacement="floating"
+        type="text"
+        placeholder="012-234-5677"
+        name="phone"
+        pattern="([^1-9]([0-9]{2}))-([0-9]{3})-([0-9]{4})"
+        [errorText]="phone_error"
+        [(ngModel)]="employee_details.phone"
+        #phone="ngModel"
+    
+        [class.ng-touched]="
+        phone.dirty || 
+        phone.touched && 
+        !phone.control.valid?
+        phone.control.touched :!phone.control.touched"
+
+        required
+      ></ion-input>
+
+      <!-- salary input -->
+      @let salary_error = 
+      salary.hasError('pattern') && "enter valid amount,thats greater than/equal to 1000" ||
+      salary.hasError('required') && "salary is required";
+      <ion-input
+        label="Salary(p.a/p.m)"
+        fill="outline"
+        labelPlacement="floating"
+        type="number"
+        placeholder="employee salary"
+        name="salary"
+
+        pattern="([^0][0-9]{3,})"
+        [errorText]="salary_error"
+        [(ngModel)]="employee_details.salary"
+         #salary="ngModel"
+         [class.ng-touched]="
+        salary.dirty || 
+        salary.touched && 
+        !salary.control.valid?
+        salary.control.touched :!salary.control.touched"
+         required
+      ></ion-input>
+ 
+      <ion-checkbox justify="space-between"
+      name="active"
+      helperText="tick on the box to set employe active"
+      [(ngModel)]="employee_details.active"
+      >Is Active?</ion-checkbox>
+     
+      <ion-note >The Update button will be active when all inputs are vallid</ion-note>
+   
+  </form> 
+  
+   <!-- Update Alert -->
+   <ion-alert
+   #updateAlert
+   header="Success Alert"
+   subHeader="Employee details succesfully updated"
+   message="click ok to go to main page/press cancel to continue editing"
+   [buttons]="alertButtons"
+   (willDismiss)="dismissAlert($event)"
+ ></ion-alert>
+</ion-content>
