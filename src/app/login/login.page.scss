@@ -1,0 +1,42 @@
+.login{
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100dvh;
+   
+.center{
+        display: flex;
+        flex-direction: column;
+        justify-content: center;
+        height: 100%;
+
+        form{
+            background-color: white;
+            padding: 1em;
+            border-radius: 5px;
+
+            ion-input{
+                --color:black;
+                --placeholder-color:gray;
+            }
+
+            ion-button{
+                --color:rgb(133, 32, 32)!important;
+                --ripple-color: white;
+            }
+        }
+    }
+}
+
+ion-content{
+    --background:#0163aa;
+}
+
+.error{
+    display: block;
+    color: red;
+}
+
+.hide{
+    display: none;
+}

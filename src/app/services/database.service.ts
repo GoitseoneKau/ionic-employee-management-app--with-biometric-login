@@ -1,6 +1,7 @@
-import { Injectable, signal } from '@angular/core';
+import { effect, Injectable, signal } from '@angular/core';
 import { CapacitorSQLite, SQLiteConnection, SQLiteDBConnection } from '@capacitor-community/sqlite';
-import { BehaviorSubject } from 'rxjs';
+import { Capacitor } from '@capacitor/core';
+import { BehaviorSubject, take } from 'rxjs';
 
 
 const DB_EMPLOYEES = 'employeedb';
@@ -14,7 +15,7 @@ export type employee = {
   position: string,
   email: string,
   phone: string,
-  salary: number
+  salary: number|null
 }
 
 @Injectable({
@@ -29,42 +30,42 @@ export class DatabaseService {
 
 
   constructor() {
-
+    this.initializePlugin()
+   
   }
 
   async initializePlugin() {
 
-    this.db = await this.sqlite
-      .createConnection(DB_EMPLOYEES, false, 'no-encrption', 1, false)
+      this.db = await this.sqlite
+        .createConnection(DB_EMPLOYEES, false, 'no-encrption', 1, false)
 
-    await this.db.open()
+      // await this.sqlite.checkConnectionsConsistency()
+      await this.db.open()
 
-    // Your database operations here
-    const SCHEMA = `CREATE TABLE IF NOT EXISTS employees(
-          id INTEGER PRIMARY KEY AUTOINCREMENT,
-          active INTEGER DEFAULT 1,
-          employee_id INTEGER NOT NULL,
-          name TEXT NOT NULL,
-          department TEXT NOT NULL,
-          position TEXT NOT NULL,
-          email TEXT NOT NULL,
-          phone TEXT NOT NULL,
-          salary REAL
-        );`;
+      // Your database operations here
+      const SCHEMA = `CREATE TABLE IF NOT EXISTS employees(
+            id INTEGER PRIMARY KEY AUTOINCREMENT,
+            active INTEGER DEFAULT 1,
+            employee_id INTEGER NOT NULL,
+            name TEXT NOT NULL,
+            department TEXT NOT NULL,
+            position TEXT NOT NULL,
+            email TEXT NOT NULL,
+            phone TEXT NOT NULL,
+            salary REAL
+          );`;
 
-   await this.db.execute(SCHEMA)
+      await this.db.execute(SCHEMA)
 
-    this.loadEmployees()
-    await this.db.close()
-
+      this.loadEmployees()
+      await this.db.close()
   }
 
 
-  loadEmployees() {
-    this.db.query(`SELECT * FROM employees;`).then((employees) => {
-      this.employees.update((value)=>value=employees.values!)
-      this.employeeSubjectBehavior.next(employees.values!)
-    });
+  async loadEmployees() {
+    const employees = await this.db.query(`SELECT * FROM employees;`)
+    this.employeeSubjectBehavior.next(employees.values!)
+    this.employees.update((value)=>value=employees.values||[])
   }
 
   async addEmployee(emp: employee) {
@@ -75,7 +76,7 @@ export class DatabaseService {
     const result = await this.db.run(query,
       [emp.employee_id, emp.name, emp.department, emp.position, emp.email, emp.phone, emp.salary]);
 
-    this.loadEmployees()
+   this.loadEmployees()
     await this.db.close()
 
     return result
@@ -112,7 +113,7 @@ export class DatabaseService {
   }
 
 
-  get employeesObservable() {
+  get employees$() {
     return this.employeeSubjectBehavior.asObservable()
   }
 

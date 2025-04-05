@@ -49,14 +49,16 @@ alertButtons = [
 
   ngOnInit() {
     const id = this.activeRoute.snapshot.params['id']
-    this.employee_details = this.db.employees().filter(emp=>emp.id==id)[0]
+   this.db.employees$.subscribe((employee)=>{
+    this.employee_details = employee.filter(emp=>emp.id==id)[0]
+    })
    
     
       addIcons({arrowBackSharp });
   }
 
   back(){
-    this.router.navigate([''],{replaceUrl:true})
+    this.router.navigate(['home'],{replaceUrl:true})
   }
 
     async editEmp(emp: employee) {
@@ -66,7 +68,7 @@ alertButtons = [
 
      dismissAlert(event: CustomEvent<OverlayEventDetail>){
         if(event.detail.role==='confirm'){
-          this.router.navigate([''],{replaceUrl:true})
+          this.router.navigate(['home'],{replaceUrl:true})
         }
         this.updateAlert.isOpen= false
         this.updateAlert.dismiss()

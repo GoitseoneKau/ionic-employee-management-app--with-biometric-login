@@ -1,27 +1,26 @@
 import { SplashScreen } from '@capacitor/splash-screen';
-import { Component, signal, ViewChild } from '@angular/core';
+import { Component, computed, signal, ViewChild } from '@angular/core';
 import { 
   IonHeader, IonToolbar, IonTitle, IonContent,
   IonSearchbar, IonIcon, IonItemOption, IonItemOptions, 
   IonItemSliding, IonItem, IonSelect, IonSelectOption, 
   IonLabel, IonText, IonList, IonListHeader, IonFabButton, 
   IonFab, IonInput, IonModal, IonButton, IonButtons, IonCard, 
-  IonFooter, IonNote, IonAlert } from '@ionic/angular/standalone';
+  IonFooter, IonNote, IonAlert,IonMenu,IonMenuButton } from '@ionic/angular/standalone';
 import { DatabaseService, employee } from '../services/database.service';
-import { FormsModule } from '@angular/forms';
+import { FormsModule, NgModel } from '@angular/forms';
 import {  NgClass, NgFor,NgIf,TitleCasePipe } from '@angular/common';
 import { IonModalCustomEvent, OverlayEventDetail } from '@ionic/core';
 import { addIcons } from 'ionicons';
 import { add, pencil, trash } from 'ionicons/icons';
-import {  Observable, take } from 'rxjs';
-import { StatusBar, Style } from '@capacitor/status-bar';
+import {  Observable, take, takeWhile } from 'rxjs';
 import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home',
   templateUrl: 'home.page.html',
   styleUrls: ['home.page.scss'],
-  imports: [IonAlert,
+  imports: [IonAlert,IonMenu,IonMenuButton,
     IonNote, IonFooter, IonCard, FormsModule, NgClass, NgFor, NgIf, TitleCasePipe,
     IonSelect, IonSelectOption, IonButtons, IonButton, IonModal,
     IonInput, IonFab, IonFabButton, IonListHeader, IonList,
@@ -37,10 +36,22 @@ export class HomePage {
   //get alert
   @ViewChild('deleteAlert') deleteAlert!:IonAlert;
 
-  employees = signal< employee[]>([])
-  search_array = signal< employee[]>([])
-  emp!: Observable<employee[]>
-  delete_result ={delete:false}
+  // employees:employee[] = []
+  // search_array:employee[] = []
+  employeeObservable =new Observable<employee[]>()
+  employees = signal<employee[]>([])
+  search = signal<string>("")
+  search_array1 = computed(()=>{
+
+    const filtered_employees = this.employees()
+    .filter(employee => 
+      employee.name.toLowerCase().includes(this.search())||
+      employee.department.toLowerCase().includes(this.search())||
+      employee.employee_id!.toString().includes(this.search())
+    )
+    const new_list = this.search() == "" ? this.employees() : filtered_employees
+    return new_list
+  })
 
   data: employee = {
     name: "",
@@ -48,7 +59,7 @@ export class HomePage {
     position: "",
     email: "",
     phone: "",
-    salary: 0
+    salary: null
   }
 
   alertButtons = [
@@ -62,49 +73,43 @@ export class HomePage {
     },
   ];
 
-  tempId:any
-
+  filterOptions = signal("")
 
 
   constructor(private readonly db: DatabaseService,private readonly router:Router) {
-    this.init()
+    SplashScreen.hide()  
+   
+    // this.employees.set(this.db.employees())
     addIcons({ add, pencil, trash });
   }
 
-  initStatus() {
-    this.setBg()
-  }
-
-  async setBg() {
-    await StatusBar.setBackgroundColor({ color: "green" })
-    await StatusBar.setOverlaysWebView({ overlay: true })
-    await StatusBar.setStyle({ style: Style.Dark });
+  ngOnInit(){
+    this.db.employees$
+    .subscribe((employees)=>this.employees.set(employees))  
   }
 
 
-  init() {
-    this.db.initializePlugin()
-    // this.db.employeesObservable.subscribe((employees)=>{
-    //   this.employees.set(employees)
-    //   this.search_array.set(employees)
-    // })
-
-      this.employees = this.search_array = this.db.employees
-     
+  async init() {
+    await this.db.initializePlugin()
+    SplashScreen.hide()  
+    this.db.employees$
+    .subscribe((employees)=>this.employees.set(employees))
   }
+
+  logout(){
+    this.router.navigate([''])
+  }
+
+  onChange(e:any){
+
+  }
+
+
 
   onSearchChange(event: Event) {
     const target = event.target as HTMLIonSearchbarElement;
     const query = target.value ?? "";
-
-    const filtered_employees = this.search_array()
-    .filter(employee => 
-      employee.name.toLowerCase().includes(query)||
-      employee.department.toLowerCase().includes(query)||
-      employee.employee_id!.toString().includes(query)
-    )
-    const new_list = query == "" ? this.search_array() : filtered_employees
-    this.employees.update((value)=>value=new_list)
+    this.search.set(query)
   }
 
   gotoDetails(id:number){
@@ -118,11 +123,10 @@ export class HomePage {
   async deleteEmp(employeeId: any) {
     this.deleteAlert.isOpen = true
     this.deleteAlert.onDidDismiss().then(
-     async (v)=>{
-        if(v.role == "confirm"){
+     async (eventDetail)=>{
+        if(eventDetail.role == "confirm"){
           await this.db.deleteEmployee(employeeId)
           alert(" success")
-          this.delete_result.delete = false
           this.deleteAlert.isOpen = false
         }
       }
@@ -131,11 +135,8 @@ export class HomePage {
   }
 
   async dismissAlert(event: CustomEvent<OverlayEventDetail>){
-    if(event.detail.role==='confirm'){
-      this.deleteAlert.isOpen = false
-      this.deleteAlert.dismiss()
-    }
     if(event.detail.role==='cancel'){
+      this.deleteAlert.isOpen = false
       this.deleteAlert.dismiss()
     }
   }
@@ -147,11 +148,12 @@ export class HomePage {
     if (event.detail.role === 'confirm') {
 
       let new_employee = event.detail.data as employee
-      new_employee.employee_id = Math.max(...this.employees().map((employee)=>employee.employee_id!))+1
+      new_employee.employee_id = this.employees().length==0? 10110 : Math.max(...this.employees().map((employee)=>employee.employee_id!))+1
       
       await this.createEmployee(new_employee)
 
       alert("insert success")
+
       this.data = {
         name: "",
         department: "",
@@ -161,6 +163,8 @@ export class HomePage {
         salary: 0
       }
     }
+
+    this.addModal.dismiss();
   }
 
   //close modal

@@ -9,7 +9,7 @@
     <ion-buttons slot="end">
       <ion-button 
       [disabled]="!editForm.control.valid"
-      [color]="editForm.control.valid?'primary':'medium'" 
+      [color]="editForm.control.valid?'success':'medium'" 
       (click)="editEmp(employee_details)"
       [strong]="true">
       Update 
@@ -17,7 +17,7 @@
     </ion-buttons>
   </ion-toolbar>
 </ion-header>
-<ion-content class="ion-padding" [fullscreen]="false" >
+<ion-content  class="ion-padding detailForm" [fullscreen]="false" >
 
   <form #editForm="ngForm" action="">
 

@@ -1,0 +1,64 @@
+
+
+<ion-content class="ion-padding login" [fullscreen]="true">
+  
+  <div class="center">
+    <form #loginForm="ngForm" action="">
+      <!-- email input -->
+       <!-- email input -->
+       @let email_error = 
+       email.hasError('pattern') && "enter valid email" ||
+       email.hasError('required') && "email is required";
+       <ion-input
+         label="Email"
+         label-placement="stacked"
+         type="email"
+         placeholder="employee@company.com"
+         name="email"
+         [(ngModel)]="data.email"
+  
+         #email="ngModel"
+         pattern="[\w\.]+@([\w]+\.)+[\w]{2,4}"
+         [errorText]="email_error"
+         required="true"
+          color="primary"
+       ></ion-input>
+  
+  
+       @let password_error = 
+       password.hasError('pattern') && "password must atleast have one , Uppercase letter, lowercase, digit and symbol i.e. @&%$#!~*+)" ||
+       password.hasError('required') && "password is required"||
+       password.hasError('minlength') && "password must be 7 characters or longer";
+    <ion-input 
+      type="password" label="Password" label-placement="stacked"
+      placeholder="password"
+     name="password"
+      pattern="((?=.*[a-z])(?=.*[A-Z])(?=.*[0-9])(?=.*[@&%$#!~*+]).*)"
+      minlength="7"
+      [(ngModel)]="data.password"
+      [errorText]="password_error"
+         #password="ngModel"
+         color="primary"
+         required
+      >
+      <ion-input-password-toggle slot="end"></ion-input-password-toggle>
+    </ion-input>
+  
+    <ion-button  (click)="login(loginForm)" class="ion-text-center" color="primary">login</ion-button>
+  
+    <ion-button (click)="register(loginForm)" class="ion-text-center" color="tertiary">RegisterWithFingerprint</ion-button>
+  <p [ngClass]="errorLogin==''? 'hide':'error'">{{errorLogin}}</p>
+  </form>
+
+  <ion-toast 
+
+    [isOpen]="isToast" 
+    [message]="toastMessage" 
+    [duration]="3000"
+    (didDismiss)="isToast = false">
+  </ion-toast>
+  </div>
+
+
+  
+</ion-content>

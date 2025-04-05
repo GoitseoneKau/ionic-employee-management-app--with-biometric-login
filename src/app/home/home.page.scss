@@ -1,11 +1,82 @@
+.logout{
+  width: 100%;
+  height: 100%;
+  ion-button{
+    height: 100%;
+    width: 100%;
+    -webkit-margin-start: 0; 
+    margin-inline-start: 0; 
+    -webkit-margin-end: 0; 
+    margin-inline-end: 0;
+    background-color: white;
+    color:black;
+  }
+}
+
+.logout-item{
+  
+    --inner-padding-end: 0px;
+    --inner-padding-start:0;
+  
+    --padding-start: 0;
+}
+
+ion-menu{
+  ion-content{
+    --background:#0163aa;
+  }
+}
+
+ion-content.addForm{
+  --background: white!important;
+  --color:black;
+}
+
+
 ion-fab {
   margin-top: var(--ion-safe-area-top, 0);
 }
 
-ion-modal {
-  --height: 85%;
+
+ion-header,ion-footer{
+ ion-toolbar{
+  --background:#0163aa;
+ }
 }
 
+ion-toolbar{
+  --background:white;
+  ion-searchbar{
+    --background:white;
+    --color:black;
+    --icon-color:black;
+    --clear-button-color:red;
+   
+  }
+}
+
+ion-title{
+  color:white;
+}
+
+ion-modal {
+  --backdrop-opacity:20%;
+}
+
+ion-toolbar:has(ion-radio){
+  display: grid;
+  grid-template-columns: auto;
+  justify-items: center;
+  justify-content: center;
+
+  ion-radio{
+    padding: 0 .3em;
+    justify-self: center;
+    --color:white;
+    --color-checked:#28bb50;
+    font-weight: bold;
+  }
+}
 
 ion-list {
   padding: 0.2em;
@@ -18,19 +89,26 @@ ion-list {
 
     ion-item {
       display: flex;
+    
       --inner-padding-end: 0px;
-      --padding-start: 0;
+      --inner-padding-start:2px;
+    
+      --padding-start: 2px;
       width: 100%;
+      --background:white;
 
       ion-label {
-        padding-right: 5px;
+        padding-right: 0px;
         max-width: 100%;
         width: max-content;
         p,
         ion-text {
           display: inline-block;
-          padding-left: 3px;
+          padding-left: 2px;
           width: 100%;
+        }
+        ion-text,p>*{
+          color: black;
         }
       }
 
@@ -55,18 +133,18 @@ ion-list {
 }
 
 .inactive {
-  background-color: #ad000d;
+  background-color: #c5000f;
 }
 
 .active-text {
-  color: #28bb50;
+  color: #28bb50 !important;
   font-size: 0.85em;
   font-weight: bold;
   width: 100%;
 }
 
 .inactive-text {
-  color: #ad000d;
+  color: #c5000f!important;
   font-size: 0.85em;
   font-weight: bold;
   text-wrap: nowrap;

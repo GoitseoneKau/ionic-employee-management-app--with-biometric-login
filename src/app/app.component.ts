@@ -3,6 +3,7 @@ import { IonApp, IonRouterOutlet} from '@ionic/angular/standalone';
 import { StatusBar,Animation,Style ,BackgroundColorOptions} from '@capacitor/status-bar';
 
 
+
 @Component({
   selector: 'app-root',
   templateUrl: 'app.component.html',
@@ -10,7 +11,7 @@ import { StatusBar,Animation,Style ,BackgroundColorOptions} from '@capacitor/sta
 })
 export class AppComponent {
   constructor() {
-   
+
   }
 
   ngOnInit(){
@@ -28,5 +29,6 @@ export class AppComponent {
       await StatusBar.setStyle({ style: Style.Dark });
       //set mobile status bar background color
       await StatusBar.setBackgroundColor({color:"#0163aa"});
+      await StatusBar.show()
   }
 }

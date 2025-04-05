@@ -1,18 +1,38 @@
-<ion-header  translucent="true">
-  <ion-toolbar color="secondary shade">
+<ion-menu contentId="main-content">
+  <ion-header>
+    <ion-toolbar>
+      <ion-title>Menu Content</ion-title>
+    </ion-toolbar>
+  </ion-header>
+  <ion-content class="ion-padding" >
+
+    
+       <ion-item class="logout-item">
+       <ion-buttons class="logout">
+        <ion-button (click)="logout()" >Logout</ion-button>
+       </ion-buttons>
+       </ion-item>
+
+  </ion-content>
+</ion-menu>
+<ion-header  translucent="true" id="main-content">
+  <ion-toolbar >
+    <ion-buttons slot="start">
+      <ion-menu-button></ion-menu-button>
+    </ion-buttons>
     <ion-title>
       Employee Management App
     </ion-title>
   </ion-toolbar>
 </ion-header>
 
-<ion-content color="secondary tint" [fullscreen]="false" >
+<ion-content color="secondary shade" [fullscreen]="true" >
   <ion-card class="ion-no-border" >
     <ion-toolbar>
       <ion-searchbar showClearButton="focus" (ionInput)="onSearchChange($event)"></ion-searchbar>
     </ion-toolbar>
   </ion-card>
-   
+ 
 
 
     <ion-fab slot="fixed" horizontal="end" vertical="bottom" >
@@ -29,17 +49,17 @@
       <h4 >List of Employees</h4>
     </ion-list-header>
    
-   <ng-content *ngIf="employees().length!==0;else noData">
-      <ion-item-sliding *ngFor="let employee of employees()">
+   <ng-content *ngIf="search_array1().length!==0;else noData">
+      <ion-item-sliding *ngFor="let employee of search_array1()">
         <ion-item class="employee" lines="full"  (click)="gotoDetails(employee.id!)"  >
             <ion-label >
-              <p><b>Department</b> : {{employee.department}}</p>
-              <p><b>Emp_ID</b> : {{employee.employee_id}}</p>
+              <p><b>Department</b> : <br> {{employee.department}}</p>
+              <p><b>Emp_ID</b> : <br>{{employee.employee_id}}</p>
 
             </ion-label>
             <ion-label >
-              <ion-text>Name : {{employee.name|titlecase}}</ion-text>
-              <p><b>Position</b> : {{employee.position}}</p>
+              <ion-text>Name : <br>{{employee.name.substring(0,15)|titlecase}}</ion-text>
+              <p><b>Position</b> : <br>{{employee.position.substring(0,15)}}</p>
   
             </ion-label>
             <ion-label >
@@ -78,14 +98,14 @@
 ></ion-alert>
 
   <!-- Modal Add-->
-  <ion-modal #addModal trigger="add-modal" (willDismiss)="onWillDismiss($event)">
+  <ion-modal #addModal  trigger="add-modal" (willDismiss)="onWillDismiss($event)">
     <ng-template>
-      <ion-header>
-        <ion-toolbar>
+      <ion-header translucent="true" color="primary">
+        <ion-toolbar class="d-flex">
           <ion-buttons slot="start">
             <ion-button (click)="cancel()" class="ion-text-center" color="danger">Cancel</ion-button>
           </ion-buttons>
-          <ion-title class="ion-text-center">Welcome</ion-title>
+          <ion-title class="ion-text-center">New Employee</ion-title>
           <ion-buttons slot="end">
             <ion-button [disabled]="!addForm.control.valid" 
             [color]="addForm.control.valid?'primary':'medium'" 
@@ -95,7 +115,7 @@
           </ion-buttons>
         </ion-toolbar>
       </ion-header>
-      <ion-content class="ion-padding">
+      <ion-content class="ion-padding addForm" fullscreen="true" >
         
         <form #addForm="ngForm" action="">
      
@@ -187,17 +207,21 @@
             @let salary_error = 
             salary.hasError('pattern') && "enter valid amount,thats greater than/equal to 1000" ||
             salary.hasError('required') && "salary is required";
+            
             <ion-input
-              label="Salary(p.a/p.m)"
+              label="Salary(p.a)"
               fill="outline"
               labelPlacement="floating"
               type="number"
               placeholder="employee salary"
               name="salary"
 
-              pattern="([^0][0-9]{3,})"
+              pattern="([^0])([0-9]{1,2})?([0-9]{3})([0-9]{3})?"
               [errorText]="salary_error"
+             
               [(ngModel)]="data.salary"
+        
+              
                #salary="ngModel"
               
                required
@@ -216,7 +240,7 @@
 </ion-content>
 
 <ion-footer  >
-  <ion-toolbar class="ion-text-center" color="secondary shade">
+  <ion-toolbar class="ion-text-center" >
     <ion-text >&copy; Copyright Goitseone Kau</ion-text>
   </ion-toolbar>
 </ion-footer>

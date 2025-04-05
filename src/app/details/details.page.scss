@@ -1,7 +1,9 @@
-.d-flex{
-    display:flex;
-    align-items:center;
-}
+
+ion-header,ion-footer{
+    ion-toolbar{
+     --background:#0163aa;
+    }
+   }
 
 ion-header ion-toolbar h5{
     margin:auto 0;
@@ -10,9 +12,18 @@ ion-header ion-toolbar h5{
 ion-checkbox {
     --size: 1.5em;
     --checkbox-background-checked: #28bb50;
+    --checkbox-background:inherit;
+    --checkmark-color:white;
 }
   
 ion-checkbox::part(container) {
     border-radius: 6px;
     border: 2px solid #28bb50;
 }
+
+
+
+ion-content.detailForm{
+    --background: white!important;
+    --color:black;
+  }
